@@ -13,6 +13,7 @@ import { textToSpeech } from '../services/elevenLabsService';
 interface ChatProps {
   mapPrompt: string | null;
   onPromptSent: () => void;
+  onOpenMap: (itinerary?: any) => void;
 }
 
 const TypingIndicator: React.FC = () => (
@@ -23,7 +24,10 @@ const TypingIndicator: React.FC = () => (
     </div>
 );
 
-export const Chat: React.FC<ChatProps> = ({ mapPrompt, onPromptSent }) => {
+export const Chat: React.FC<ChatProps> = ({ mapPrompt, onPromptSent, onOpenMap }) => {
+  // Debug logging
+  console.log('Chat component rendered with onOpenMap:', onOpenMap);
+  
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +41,9 @@ export const Chat: React.FC<ChatProps> = ({ mapPrompt, onPromptSent }) => {
   });
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
   };
 
   useEffect(() => {
@@ -77,29 +83,62 @@ export const Chat: React.FC<ChatProps> = ({ mapPrompt, onPromptSent }) => {
     setInput('');
     setIsLoading(true);
 
-    const aiResponse = await sendMessageToAI(prompt);
+    // Check if this is a demo prompt before calling AI
     const normalizedInput = prompt.trim().toLowerCase();
     
-    const specialContent = DEMO_PROMPTS[normalizedInput] || (DEMO_PROMPTS[normalizedInput.replace(/[.?]/g, '')]);
+    // Check for exact matches first
+    let specialContent = DEMO_PROMPTS[normalizedInput] || (DEMO_PROMPTS[normalizedInput.replace(/[.?]/g, '')]);
+    
+    // If no exact match, check for partial matches
+    if (!specialContent) {
+      for (const key in DEMO_PROMPTS) {
+        if (normalizedInput.includes(key)) {
+          specialContent = DEMO_PROMPTS[key];
+          break;
+        }
+      }
+    }
 
+    // Debug logging
+    console.log('Input:', normalizedInput);
+    console.log('Special content found:', specialContent);
 
-    const aiMessage: Message = {
-      id: uniqueId(),
-      sender: Sender.AI,
-      text: aiResponse.text,
-      specialContent: specialContent,
-      places: aiResponse.places,
-    };
+    let aiMessage: Message;
+
+    // If we found a demo prompt, use a predefined response
+    if (specialContent && specialContent.type === 'map_link') {
+      aiMessage = {
+        id: uniqueId(),
+        sender: Sender.AI,
+        text: "Allow me to craft a bespoke journey for you. A day that begins with the dramatic cliffs of The Needles, where the chalk stacks stand sentinel against the endless sky. We'll then journey to Osborne House, Queen Victoria's cherished retreat, where history whispers through the halls. Finally, we'll descend into the enchanting Shanklin Chine, where water and wind have carved a cathedral of natural wonder.\n\n...allow me to show you this journey on my Enchanted Atlas.",
+        specialContent: specialContent,
+        places: [],
+      };
+    } else {
+      const aiResponse = await sendMessageToAI(prompt);
+      
+      aiMessage = {
+        id: uniqueId(),
+        sender: Sender.AI,
+        text: aiResponse.text,
+        specialContent: specialContent,
+        places: aiResponse.places,
+      };
+    }
 
     setMessages((prev) => [...prev, aiMessage]);
     setIsLoading(false);
 
-    if (isVoiceEnabled && aiResponse.text) {
-        const audioBlob = await textToSpeech(aiResponse.text);
-        if (audioBlob) {
-            playAudio(audioBlob);
-            setCurrentlySpeakingId(aiMessage.id);
-        }
+    // Voice is only enabled for actual AI responses, not demo prompts
+    if (specialContent && specialContent.type === 'map_link') {
+      // Do nothing for demo prompts
+    } else if (isVoiceEnabled && aiMessage.text) {
+      // This is for actual AI responses
+      const audioBlob = await textToSpeech(aiMessage.text);
+      if (audioBlob) {
+        playAudio(audioBlob);
+        setCurrentlySpeakingId(aiMessage.id);
+      }
     }
   };
 
@@ -115,22 +154,26 @@ export const Chat: React.FC<ChatProps> = ({ mapPrompt, onPromptSent }) => {
 
   return (
     <>
-      <div className="flex-grow flex flex-col bg-black/50 border border-white/10 rounded-t-xl overflow-hidden backdrop-blur-md shadow-2xl">
+      <div className="flex flex-col h-full bg-black/50 border border-white/10 rounded-t-xl overflow-hidden backdrop-blur-md shadow-2xl">
         <Weather />
-        <div className="flex-grow p-3 md:p-4 overflow-y-auto">
+        <div className="flex-grow overflow-y-auto p-3 md:p-4">
           {messages.map((msg) => (
             <MessageComponent 
                 key={msg.id} 
                 message={msg} 
                 onOpenItineraries={() => setIsModalOpen(true)}
                 isSpeaking={msg.id === currentlySpeakingId}
+                onOpenMap={(itinerary) => {
+                  console.log('Chat onOpenMap called with itinerary:', itinerary);
+                  onOpenMap(itinerary);
+                }}
             />
           ))}
           {isLoading && <TypingIndicator />}
           <div ref={messagesEndRef} />
         </div>
         {messages.length <= 1 && <SuggestionPanels onSuggestionClick={handleSuggestionClick} />}
-        <form onSubmit={handleSubmit} className="p-3 border-t border-white/10 bg-black/30">
+        <form onSubmit={handleSubmit} className="p-3 border-t border-white/10 bg-black/30 flex-shrink-0">
           <div className="flex items-center bg-white/5 rounded-full p-1.5">
             <input
               type="text"

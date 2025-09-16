@@ -16,7 +16,11 @@ const App: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [view, setView] = useState<View>('chat');
   const [mapPrompt, setMapPrompt] = useState<string | null>(null);
+  const [mapItinerary, setMapItinerary] = useState<any>(null);
 
+  // Debug logging
+  console.log('App rendered with view:', view);
+  console.log('mapItinerary:', mapItinerary);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,8 +35,15 @@ const App: React.FC = () => {
     setView('chat');
   };
 
+  const handleOpenMap = (itinerary?: any) => {
+    console.log('handleOpenMap called with itinerary:', itinerary);
+    setMapItinerary(itinerary);
+    setView('map');
+    console.log('View set to map');
+  };
+
   return (
-    <main className="relative min-h-screen w-screen overflow-hidden bg-black">
+    <main className="relative h-screen w-screen overflow-hidden bg-black">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((src, index) => (
@@ -83,13 +94,13 @@ const App: React.FC = () => {
 
 
       {/* Main Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center p-4">
         <div
           className="flex h-full w-full max-w-6xl flex-col transition-filter duration-300"
         >
           {view === 'chat' && (
             <>
-              <header className="py-8 text-center text-white">
+              <header className="py-8 text-center text-white flex-shrink-0">
                 <h1 className="font-serif-elegant text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-wide">
                   I am the Sovereign of this Island.
                 </h1>
@@ -97,11 +108,18 @@ const App: React.FC = () => {
                   How can I help you begin your story?
                 </p>
               </header>
-              <Chat mapPrompt={mapPrompt} onPromptSent={() => setMapPrompt(null)} />
+              <div className="flex-grow overflow-hidden">
+                <Chat mapPrompt={mapPrompt} onPromptSent={() => setMapPrompt(null)} onOpenMap={handleOpenMap} />
+              </div>
             </>
           )}
           {view === 'member' && <FutureMemberPage onBack={() => setView('chat')} /> }
-          {view === 'map' && <MapComponent onMapSelect={handleMapSelect} /> }
+          {view === 'map' && (
+            <div className="h-full w-full">
+              <MapComponent onMapSelect={handleMapSelect} itinerary={mapItinerary} />
+            </div>
+          )}
+
         </div>
       </div>
     </main>

@@ -6,7 +6,41 @@ interface MessageProps {
   message: Message;
   onOpenItineraries: () => void;
   isSpeaking: boolean;
+  onOpenMap: (itinerary?: any) => void;
 }
+
+// Function to safely format AI-generated text with basic HTML elements
+const formatAIText = (text: string) => {
+  // Escape HTML characters to prevent XSS
+  const escapeHtml = (unsafe: string) => {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  // First escape all HTML to prevent XSS
+  let safeText = escapeHtml(text);
+  
+  // Then convert markdown-style headings to HTML headings
+  let formattedText = safeText
+    // Convert ## Heading ## to <h2>Heading</h2>
+    .replace(/^##\s+(.*?)\s*##*$/gm, '<h2 class="font-serif-elegant text-xl font-semibold my-3 text-white">$1</h2>')
+    // Convert ### Heading ### to <h3>Heading</h3>
+    .replace(/^###\s+(.*?)\s*##*$/gm, '<h3 class="font-serif-elegant text-lg font-semibold my-2.5 text-white">$1</h3>')
+    // Convert #### Heading #### to <h4>Heading</h4>
+    .replace(/^####\s+(.*?)\s*##*$/gm, '<h4 class="font-serif-elegant font-semibold my-2 text-white">$1</h4>')
+    // Convert **bold** to <strong>bold</strong>
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+    // Convert *italic* to <em>italic</em>
+    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+    // Convert line breaks to <br> tags
+    .replace(/\n/g, '<br />');
+
+  return formattedText;
+};
 
 const PlacesDisplay: React.FC<{ places: Place[] }> = ({ places }) => {
     if (!places || places.length === 0) return null;
@@ -42,7 +76,10 @@ const PlacesDisplay: React.FC<{ places: Place[] }> = ({ places }) => {
 };
 
 
-const SpecialContentDisplay: React.FC<{ content: Message['specialContent'], onOpenItineraries: () => void }> = ({ content, onOpenItineraries }) => {
+const SpecialContentDisplay: React.FC<{ content: Message['specialContent'], onOpenItineraries: () => void, onOpenMap: (itinerary?: any) => void }> = ({ content, onOpenItineraries, onOpenMap }) => {
+    // Debug logging
+    console.log('SpecialContentDisplay rendered with content:', content);
+    
     if (!content) return null;
 
     switch (content.type) {
@@ -69,6 +106,25 @@ const SpecialContentDisplay: React.FC<{ content: Message['specialContent'], onOp
                     View Augmented Itineraries
                 </button>
             );
+        case 'map_link':
+            console.log('Rendering map_link button with itinerary:', content.itinerary);
+            return (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Map link clicked with itinerary:', content.itinerary);
+                        console.log('Calling onOpenMap with itinerary:', content.itinerary);
+                        onOpenMap(content.itinerary);
+                        console.log('onOpenMap call completed');
+                    }}
+                    className="mt-3 px-4 py-2 bg-blue-600/50 border border-blue-400/30 rounded-md text-white font-semibold hover:bg-blue-600/70 transition-colors flex items-center"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    View on Enchanted Atlas
+                </button>
+            );
         default:
             return null;
     }
@@ -84,7 +140,11 @@ const SpeakingIndicator: React.FC = () => (
     </div>
 );
 
-export const MessageComponent: React.FC<MessageProps> = ({ message, onOpenItineraries, isSpeaking }) => {
+export const MessageComponent: React.FC<MessageProps> = ({ message, onOpenItineraries, isSpeaking, onOpenMap }) => {
+  // Debug logging
+  console.log('MessageComponent rendered with message:', message);
+  console.log('onOpenMap function:', onOpenMap);
+  
   const isAI = message.sender === Sender.AI;
 
   return (
@@ -97,9 +157,16 @@ export const MessageComponent: React.FC<MessageProps> = ({ message, onOpenItiner
       )}
       <div className={`flex flex-col ${isAI ? 'items-start' : 'items-end'}`}>
         <div className={`px-4 py-3 rounded-2xl max-w-xl ${isAI ? 'bg-white/10 rounded-tl-none' : 'bg-blue-600/50 text-white rounded-br-none'}`}>
-          <p className="text-white whitespace-pre-wrap">{message.text}</p>
+          {isAI ? (
+            <div 
+              className="text-white whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{ __html: formatAIText(message.text) }}
+            />
+          ) : (
+            <p className="text-white whitespace-pre-wrap">{message.text}</p>
+          )}
         </div>
-        {message.specialContent && <SpecialContentDisplay content={message.specialContent} onOpenItineraries={onOpenItineraries} />}
+        {message.specialContent && <SpecialContentDisplay content={message.specialContent} onOpenItineraries={onOpenItineraries} onOpenMap={onOpenMap} />}
         {message.places && <PlacesDisplay places={message.places} />}
       </div>
     </div>
