@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './SuggestionPanels.module.css';
 
 interface SuggestionPanelsProps {
   onSuggestionClick: (suggestion: string) => void;
@@ -22,27 +23,14 @@ const SuggestionButton: React.FC<{ text: string; onClick: () => void }> = ({ tex
 
 export const SuggestionPanels: React.FC<SuggestionPanelsProps> = ({ onSuggestionClick }) => {
   return (
-    <div className="flex-shrink-0 px-4 pb-3 flex items-center justify-center gap-2 flex-wrap animate-fade-in">
+    <div className={`flex-shrink-0 px-4 pb-3 flex items-center justify-center gap-2 flex-wrap ${styles.fadeIn}`}>
       {suggestions.map((suggestion) => (
-        <SuggestionButton 
-          key={suggestion} 
-          text={suggestion} 
-          onClick={() => onSuggestionClick(suggestion)} 
+        <SuggestionButton
+          key={suggestion}
+          text={suggestion}
+          onClick={() => onSuggestionClick(suggestion)}
         />
       ))}
     </div>
   );
 };
-
-// Add a simple fade-in animation for the panels
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-out forwards;
-  }
-`;
-document.head.append(style);

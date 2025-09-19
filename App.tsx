@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Chat } from './components/Chat';
 import { FutureMemberPage } from './components/FutureMemberPage';
 import { MapComponent } from './components/Map';
+import { VisionaryFolio } from './components/VisionaryFolio';
 
 const backgroundImages = [
   'https://i.imgur.com/66V4nde.png',
@@ -10,13 +11,31 @@ const backgroundImages = [
   'https://i.imgur.com/4sIFdCz.png',
 ];
 
-type View = 'chat' | 'member' | 'map';
+type View = 'chat' | 'member' | 'map' | 'folio';
+
+const validViews: ReadonlyArray<View> = ['chat', 'member', 'map', 'folio'];
+
+const getInitialView = (): View => {
+  if (typeof window === 'undefined') {
+    return 'chat';
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const viewParam = params.get('view');
+
+  if (viewParam && validViews.includes(viewParam as View)) {
+    return viewParam as View;
+  }
+
+  return 'chat';
+};
 
 const App: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [view, setView] = useState<View>('chat');
+  const [view, setView] = useState<View>(getInitialView());
   const [mapPrompt, setMapPrompt] = useState<string | null>(null);
   const [mapItinerary, setMapItinerary] = useState<any>(null);
+  const [isLegendVisible, setIsLegendVisible] = useState(false);
 
   // Debug logging
   console.log('App rendered with view:', view);
@@ -30,6 +49,24 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (view === 'chat') {
+      params.delete('view');
+    } else {
+      params.set('view', view);
+    }
+
+    const search = params.toString();
+    const newUrl = `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [view]);
+
   const handleMapSelect = (prompt: string) => {
     setMapPrompt(prompt);
     setView('chat');
@@ -42,21 +79,25 @@ const App: React.FC = () => {
     console.log('View set to map');
   };
 
+  const handleEnterFolio = () => {
+    setView('folio');
+  };
+
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-black">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((src, index) => (
-            <img
-                key={index}
-                src={src}
-                alt="Scenic view of the Isle of Wight"
-                className={`
-                  absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out
-                  ${currentImageIndex === index ? 'opacity-60' : 'opacity-0'}
-                `}
-                aria-hidden={currentImageIndex !== index}
-            />
+          <img
+            key={index}
+            src={src}
+            alt="Scenic view of the Isle of Wight"
+            className={`
+              absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out
+              ${currentImageIndex === index ? 'opacity-60' : 'opacity-0'}
+            `}
+            aria-hidden={currentImageIndex !== index}
+          />
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20"></div>
       </div>
@@ -69,57 +110,103 @@ const App: React.FC = () => {
             className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
             aria-label="Return to Chat"
           >
-              Return to Chat
+            Return to Chat
           </button>
         )}
-         {view === 'chat' && (
+        {view === 'chat' && (
           <>
             <button
-                onClick={() => setView('map')}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
-                aria-label="Explore the map"
+              onClick={() => setView('map')}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
+              aria-label="Explore the map"
             >
-                Explore the Map
+              Explore the Map
             </button>
             <button
-                onClick={() => setView('member')}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
-                aria-label="View Sovereign Membership details"
+              onClick={() => setView('member')}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
+              aria-label="View Sovereign Membership details"
             >
-                Sovereign Membership
+              Sovereign Membership
             </button>
           </>
-      )}
+        )}
       </div>
-
 
       {/* Main Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center p-4">
-        <div
-          className="flex h-full w-full max-w-6xl flex-col transition-filter duration-300"
-        >
+        <div className="flex h-full w-full max-w-6xl flex-col transition-filter duration-300">
           {view === 'chat' && (
             <>
               <header className="py-8 text-center text-white flex-shrink-0">
-                <h1 className="font-serif-elegant text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-wide">
-                  I am the Sovereign of this Island.
-                </h1>
-                <p className="font-serif-elegant text-2xl md:text-3xl lg:text-4xl mt-2">
+                <div className="relative mx-auto flex max-w-3xl items-center justify-center gap-3 text-center">
+                  <h1 className="font-serif-elegant text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-wide">
+                    I am Isabella. The last true Sovereign of this Isle.
+                  </h1>
+                  <button
+                    type="button"
+                    onMouseEnter={() => setIsLegendVisible(true)}
+                    onMouseLeave={() => setIsLegendVisible(false)}
+                    onFocus={() => setIsLegendVisible(true)}
+                    onBlur={() => setIsLegendVisible(false)}
+                    onClick={() => setIsLegendVisible((prev) => !prev)}
+                    className="hidden md:inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/10 text-sm font-semibold text-white/80 transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                    aria-label="Who is Isabella?"
+                    aria-expanded={isLegendVisible}
+                  >
+                    i
+                  </button>
+                  {isLegendVisible && (
+                    <div
+                      className="absolute top-full left-1/2 z-20 mt-4 w-full max-w-md -translate-x-1/2 rounded-2xl border border-white/15 bg-black/85 p-4 text-left text-sm leading-relaxed text-gray-200 shadow-2xl backdrop-blur"
+                      onMouseEnter={() => setIsLegendVisible(true)}
+                      onMouseLeave={() => setIsLegendVisible(false)}
+                    >
+                      <p className="font-serif-elegant text-lg text-white">The Legend of Isabella</p>
+                      <p className="mt-2">
+                        Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century—a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <p className="font-serif-elegant text-2xl md:text-3xl lg:text-4xl mt-4">
                   How can I help you begin your story?
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setIsLegendVisible((prev) => !prev)}
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.35em] text-white/80 transition hover:bg-white/20 md:hidden"
+                  aria-expanded={isLegendVisible}
+                >
+                  Who is Isabella?
+                </button>
+                {isLegendVisible && (
+                  <div
+                    className="mt-3 w-full rounded-2xl border border-white/15 bg-black/80 p-4 text-left text-sm leading-relaxed text-gray-200 shadow-xl backdrop-blur md:hidden"
+                    onMouseEnter={() => setIsLegendVisible(true)}
+                    onMouseLeave={() => setIsLegendVisible(false)}
+                  >
+                    <p className="font-serif-elegant text-lg text-white">The Legend of Isabella</p>
+                    <p className="mt-2">
+                      Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century—a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
+                    </p>
+                  </div>
+                )}
               </header>
               <div className="flex-grow overflow-hidden">
                 <Chat mapPrompt={mapPrompt} onPromptSent={() => setMapPrompt(null)} onOpenMap={handleOpenMap} />
               </div>
             </>
           )}
-          {view === 'member' && <FutureMemberPage onBack={() => setView('chat')} /> }
+          {view === 'member' && (
+            <FutureMemberPage onBack={() => setView('chat')} onEnterFolio={handleEnterFolio} />
+          )}
           {view === 'map' && (
             <div className="h-full w-full">
               <MapComponent onMapSelect={handleMapSelect} itinerary={mapItinerary} />
             </div>
           )}
-
+          {view === 'folio' && <VisionaryFolio onBack={() => setView('member')} />}
         </div>
       </div>
     </main>

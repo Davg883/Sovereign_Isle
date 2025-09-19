@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
       define: {
         'process.env.API_KEY': JSON.stringify(env.API_KEY),
         'process.env.ELEVENLABS_API_KEY': JSON.stringify(env.ELEVENLABS_API_KEY),
-        'process.env.MAPS_API_KEY': JSON.stringify(env.MAPS_API_KEY)
+        'process.env.NEXT_PUBLIC_MAPS_API_KEY': JSON.stringify(env.NEXT_PUBLIC_MAPS_API_KEY)
       },
       resolve: {
         alias: {
