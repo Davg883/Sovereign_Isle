@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8" />
@@ -27,7 +27,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at top, rgba(52, 152, 219, 0.1), transparent 55%), var(--sovereign-slate);
+            background: radial-gradient(circle at top, rgba(52, 152, 219, 0.12), transparent 55%), var(--sovereign-slate);
             color: var(--alum-bay-white);
             font-family: var(--font-sans);
             line-height: 1.7;
@@ -55,6 +55,34 @@
             margin: 1rem auto 0;
             color: rgba(245, 243, 239, 0.78);
             font-size: 1.05rem;
+        }
+
+        .partner-access {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.75rem;
+        }
+
+        .partner-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.4rem;
+            border-radius: 999px;
+            border: 1px solid rgba(245, 243, 239, 0.2);
+            background: rgba(245, 243, 239, 0.05);
+            color: rgba(245, 243, 239, 0.85);
+            text-decoration: none;
+            font-size: 0.72rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .partner-link:hover {
+            background: rgba(212, 175, 55, 0.22);
+            border-color: rgba(212, 175, 55, 0.45);
+            color: var(--alum-bay-white);
         }
 
         .dispatch-grid {
@@ -170,50 +198,27 @@
             background: rgba(245, 243, 239, 0.12);
             border-color: rgba(245, 243, 239, 0.35);
         }
-            .partner-access {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-        .partner-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.55rem 1.4rem;
-            border-radius: 999px;
-            border: 1px solid rgba(245, 243, 239, 0.2);
-            background: rgba(245, 243, 239, 0.05);
-            color: rgba(245, 243, 239, 0.85);
-            text-decoration: none;
-            font-size: 0.72rem;
-            letter-spacing: 0.28em;
-            text-transform: uppercase;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .partner-link:hover {
-            background: rgba(212, 175, 55, 0.22);
-            border-color: rgba(212, 175, 55, 0.45);
-            color: var(--alum-bay-white);
-        }</style>
+    </style>
 </head>
 <body>
     <main class="page-shell">
         <header>
             <h1>Sovereign Dispatches</h1>
             <p>
-                Curated essays, whispered legends, and field notes for members of the Sovereign Circle. Wander deeper into our IsleÃ¯Â¿Â½s
+                Curated essays, whispered legends, and field notes for members of the Sovereign Circle. Wander deeper into our Isle's
                 stories and return whenever you wish.
             </p>
-                <div class="partner-access">
-            <a href="../partners/albion-hotel.html" class="partner-link">Partner Access Ã¢â€ â€™</a>
-        </div></header>
+            <div class="partner-access">
+                <a href="../partners/albion-hotel.html" class="partner-link">Partner Access &rarr;</a>
+            </div>
+        </header>
 
         <section class="dispatch-grid">
             <article class="dispatch-card">
                 <div class="card-subheading">Lore &amp; Strategy</div>
                 <h2 class="card-heading">A Secret AI Branding Playbook</h2>
                 <p class="card-body">
-                    Explore the art direction, myth-making, and brand alchemy behind IsabellaÃ¯Â¿Â½s voice and the world of visitwight.ai.
+                    Explore the art direction, myth-making, and brand alchemy behind Isabella's voice and the world of visitwight.ai.
                     A manifesto for master operators in the age of enchanted intelligence.
                 </p>
                 <div class="card-footer">
@@ -223,9 +228,9 @@
 
             <article class="dispatch-card">
                 <div class="card-subheading">Mythic Pathways</div>
-                <h2 class="card-heading">KingÃ¯Â¿Â½s Coastal Walk Companion</h2>
+                <h2 class="card-heading">King's Coastal Walk Companion</h2>
                 <p class="card-body">
-                    Follow the proposed KingÃ¯Â¿Â½s Path around the IsleÃ¯Â¿Â½s northern edge, weaving together royal enclaves, smuggler legends,
+                    Follow the proposed King's Path around the Isle's northern edge, weaving together royal enclaves, smuggler legends,
                     ecclesiastical ruins, and modern guardians of the sea.
                 </p>
                 <div class="card-footer">
@@ -240,4 +245,3 @@
     </main>
 </body>
 </html>
-<!-- marker -->
