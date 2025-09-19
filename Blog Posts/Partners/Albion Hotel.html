@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isle Connect | A Partnership Prospectus</title>
+    
+    <!-- Importing our brand's dual-voice typography from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 
+        -----------------------------------------------------
+        The Sovereign Isle Prospectus: Final Partner Page Style
+        Art Direction by Your Creative Partner
+        -----------------------------------------------------
+        */
+
+        :root {
+            --sovereign-slate: #1A1D21;
+            --alum-bay-white: #F5F3EF;
+            --carisbrooke-stone: #A1A1A1;
+            --sovereign-glow-accent: #D4AF37;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--sovereign-slate);
+            color: var(--alum-bay-white);
+            font-family: var(--font-sans);
+            line-height: 1.7;
+            font-size: 18px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .prospectus-container {
+            max-width: 1100px;
+            width: 100%;
+            padding: 4rem 2rem;
+            box-sizing: border-box;
+        }
+
+        .section {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+        
+        .section.text-left {
+            text-align: left;
+        }
+
+        h1, h2 {
+            font-family: var(--font-serif);
+            font-weight: 500;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--carisbrooke-stone);
+        }
+        
+        .two-column p {
+            margin-left: 0;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem auto 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            text-align: left;
+        }
+
+        .two-column img {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .gallery img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .form-section {
+             background-color: rgba(255, 255, 255, 0.03);
+             padding: 4rem;
+             border-radius: 12px;
+             border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .form-section input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: var(--sovereign-slate);
+            border: 1px solid var(--carisbrooke-stone);
+            color: var(--alum-bay-white);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--sovereign-glow-accent);
+            color: var(--sovereign-slate);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 30px;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent);
+            margin: 6rem 0;
+        }
+
+            .access-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, rgba(212, 175, 55, 0.15), rgba(17, 20, 24, 0.95));
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+        .access-panel {
+            width: min(420px, 90vw);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(245, 243, 239, 0.15);
+            background: rgba(17, 20, 24, 0.85);
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+            text-align: center;
+        }
+        .access-panel h2 {
+            font-family: var(--font-serif);
+            font-size: 1.85rem;
+            margin-bottom: 0.75rem;
+        }
+        .access-panel p {
+            margin-bottom: 1.5rem;
+            color: rgba(245, 243, 239, 0.72);
+        }
+        .access-input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(245, 243, 239, 0.25);
+            background: rgba(17, 20, 24, 0.85);
+            color: var(--alum-bay-white);
+            font-family: var(--font-sans);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .access-submit {
+            margin-top: 1.25rem;
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            background: rgba(212, 175, 55, 0.85);
+            color: var(--sovereign-slate);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .access-submit:hover {
+            background: rgba(212, 175, 55, 1);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+        }
+        .access-message {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ff9a9a;
+            min-height: 1.2rem;
+        }
+        .locked {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="accessOverlay" class="access-overlay">
+        <div class="access-panel" role="dialog" aria-modal="true" aria-labelledby="accessHeading">
+            <h2 id="accessHeading">Partner Access Required</h2>
+            <p>Enter the password provided by Isabella to view this proposal.</p>
+            <form id="accessForm">
+                <input id="accessInput" class="access-input" type="password" autocomplete="current-password" placeholder="Password" required />
+                <button type="submit" class="access-submit">Unlock</button>
+                <div id="accessMessage" class="access-message" aria-live="polite"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="protectedContent" class="locked" aria-hidden="true">
+
+    <div class="prospectus-container">
+
+        <!-- ACT I: THE HOOK (THE VISION) -->
+        <section class="section">
+            <h1>The Story of Your Business, Reimagined.</h1>
+            <p>This is not a marketing video. It is a glimpse into a new way of seeing, a testament to the soul of a place, brought to life through our "Third Way" philosophy of human-directed artistry, powered by AI.</p>
+            <div class="video-container">
+                <video controls autoplay loop muted playsinline>
+                    <source src="https://i.imgur.com/S1S64ks.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+        <hr>
+
+        <!-- ACT II: THE PROBLEM -->
+        <section class="section">
+            <div class="two-column">
+                <img src="https://i.imgur.com/KZHTfI5.png" alt="St. Catherine's Oratory at a misty, golden dawn, representing a hidden gem.">
+                <div class="text-left">
+                    <h2>Are You Becoming Invisible?</h2>
+                    <p>The world of travel discovery has changed forever. The battle is no longer for the top of Google. With a growing majority of consumers trusting AI for travel planning, the game has shifted. They don’t want a list of links; they want a single, definitive answer. If you are not part of that answer, you risk disappearing.</p>
+                </div>
+            </div>
+        </section>
+        
+        <hr>
+
+        <!-- ACT III: THE SOLUTION -->
+        <section class="section">
+            <div class="two-column">
+                <div class="text-left">
+                    <h2>Your Voice, Amplified.</h2>
+                    <p>The Sovereign Console is your direct line to the heart of the Living Island. We've removed the complexity. No confusing dashboards, no technical skills needed. You can update your menus, your daily specials, and your live availability in seconds. It’s as simple as sending a message. Our AI, Isabella, does the rest, weaving your real-time story into the beautiful, personalised itineraries she creates for visitors.</p>
+                </div>
+                <img src="https://i.imgur.com/17AfUOS.png" alt="A tablet showing the elegant and simple Sovereign Console UI.">
+            </div>
+        </section>
+        
+        <hr>
+        
+        <!-- ACT IV: THE RESULT -->
+        <section class="section">
+            <h2>This is the Story You Help Us Tell.</h2>
+            <p>When your real-time update becomes the perfect answer to a visitor's request, you are no longer just a listing; you are a vital part of a curated, unforgettable experience. This is the beautiful, premium context where your story comes to life.</p>
+            <img src="https://i.imgur.com/jr8mNLz.png" alt="A phone mockup showing the beautiful Isle Connect user experience." style="width: 100%; max-width: 900px; border-radius: 12px; margin-top: 2rem;">
+        </section>
+
+        <hr>
+
+        <!-- ACT V: THE PROOF -->
+        <section class="section">
+            <h2>The Art of Enchanted Realism.</h2>
+            <p>This is the undeniable proof of our creative vision. We don't just market a destination; we create a world. By partnering with us, you become a central character in this breathtaking story.</p>
+            <div class="gallery">
+                <img src="https://i.imgur.com/3mVAPpj.png" alt="Eleanor Vance in an Albion Hotel room, seeing the digital soul of the sea.">
+                <img src="https://i.imgur.com/UTSv0hd.png" alt="Julian Croft at the Albion Hotel bar with a holographic nautical chart.">
+                <img src="https://i.imgur.com/AQIkNzv.jpeg" alt="The Needles social media post showing our unique 'Enchanted Realism' style.">
+            </div>
+        </section>
+        
+        <hr>
+
+        <!-- ACT VI: THE INVITATION -->
+        <section class="section form-section">
+            <h2>Join the Island's Most Curated Network.</h2>
+            <p>We are currently onboarding a select group of the island's finest establishments to become Founding Partners in the Sovereign Isle project. To learn more about how Isle Connect can connect you with a new generation of discerning visitors, please get in touch.</p>
+            <form style="max-width: 500px; margin: 2rem auto 0;">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="text" name="business" placeholder="Business Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <button type="submit" class="cta-button">Request an Invitation</button>
+            </form>
+        </section>
+
+    </div>
+
+    </div>
+
+    <script>
+        (function () {
+            const PASSWORD = 'Albion';
+            const overlay = document.getElementById('accessOverlay');
+            const form = document.getElementById('accessForm');
+            const input = document.getElementById('accessInput');
+            const message = document.getElementById('accessMessage');
+            const content = document.getElementById('protectedContent');
+
+            const grantAccess = () => {
+                overlay.style.display = 'none';
+                content.classList.remove('locked');
+                content.setAttribute('aria-hidden', 'false');
+            };
+
+            if (window.sessionStorage.getItem('albion_partner_access') === 'granted') {
+                grantAccess();
+            }
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const value = input.value.trim();
+                if (value === PASSWORD) {
+                    window.sessionStorage.setItem('albion_partner_access', 'granted');
+                    grantAccess();
+                } else {
+                    message.textContent = 'Incorrect password. Please try again.';
+                    input.value = '';
+                    input.focus();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
