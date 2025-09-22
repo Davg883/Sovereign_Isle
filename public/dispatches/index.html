@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8" />
@@ -115,6 +115,8 @@
             mask-composite: exclude;
             opacity: 0;
             transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .dispatch-card:hover {
@@ -149,7 +151,6 @@
         .card-footer {
             margin-top: 1rem;
         }
-
         .card-link {
             display: inline-flex;
             align-items: center;
@@ -159,17 +160,32 @@
             border: 1px solid rgba(245, 243, 239, 0.2);
             background: rgba(245, 243, 239, 0.08);
             color: var(--alum-bay-white);
-            text-decoration: none;
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             font-size: 0.78rem;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            text-decoration: none;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+            position: relative;
+            z-index: 1;
         }
 
-        .card-link:hover {
-            background: rgba(212, 175, 55, 0.25);
-            border-color: rgba(212, 175, 55, 0.45);
+        .card-link:focus-visible {
+            outline: 2px solid rgba(212, 175, 55, 0.6);
+            outline-offset: 2px;
+        }
+
+
+        .card-link:hover,
+        .card-link:focus-visible {
+            background: rgba(212, 175, 55, 0.22);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35), 0 10px 24px rgba(0, 0, 0, 0.35);
+            transform: translateY(-1px);
+            color: var(--alum-bay-white);
         }
 
         .back-home {
@@ -222,7 +238,7 @@
                     A manifesto for master operators in the age of enchanted intelligence.
                 </p>
                 <div class="card-footer">
-                    <a class="card-link" href="/dispatches/sovereign-ai-branding-playbook.html">Read Dispatch &rarr;</a>
+                    <a class="card-link" href="sovereign-ai-branding-playbook.html">Read Dispatch &rarr;</a>
                 </div>
             </article>
 
@@ -234,7 +250,18 @@
                     ecclesiastical ruins, and modern guardians of the sea.
                 </p>
                 <div class="card-footer">
-                    <a class="card-link" href="/dispatches/kings-coastal-walk.html">Read Dispatch &rarr;</a>
+                    <a class="card-link" href="kings-coastal-walk.html">Read Dispatch &rarr;</a>
+                </div>
+            </article>
+
+            <article class="dispatch-card">
+                <div class="card-subheading">Operator Manuals</div>
+                <h2 class="card-heading">The Two-Step Master Operator Flow</h2>
+                <p class="card-body">
+                    A disciplined pipeline that elevates a clean base plate into an investor-grade narrative frame through human-directed augmentation.
+                </p>
+                <div class="card-footer">
+                    <a class="card-link" href="two-step-master-operator-flow.html">Read Dispatch &rarr;</a>
                 </div>
             </article>
         </section>

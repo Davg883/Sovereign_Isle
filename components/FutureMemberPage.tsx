@@ -22,8 +22,8 @@ const pillarCards = [
 
 export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEnterFolio }) => {
   return (
-    <div className="flex h-full flex-col bg-gradient-to-br from-black/85 via-black/70 to-black/85 text-white animate-fade-in">
-      <div className="relative flex-1 overflow-y-auto">
+    <div className="h-full overflow-y-auto bg-gradient-to-br from-black/85 via-black/70 to-black/85 text-white animate-fade-in">
+      <div className="relative">
         <div className="absolute inset-0 bg-[url('https://i.imgur.com/B7xdeX9.png')] bg-cover bg-center opacity-20"></div>
         <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-10 md:px-10 lg:py-16">
           {/* Section 1: Welcome */}
@@ -66,17 +66,29 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
                   Journey deeper through my newly unveiled chronicles�curated essays, field notes, and whispered futures from the Isle of Wight. Every dispatch is an invitation to stand at the edge of what comes next.
                 </p>
               </div>
-              <div className="mt-auto">
-                <button
-                  type="button"
-                  onClick={() => window.open('/dispatches/index.html', '_blank', 'noopener')}
+              <div className="mt-auto flex flex-col gap-3 sm:flex-row">
+                <a
+                  href="/dispatches/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-2 text-sm font-semibold tracking-wide text-white transition hover:bg-white/20"
                 >
                   Enter the Dispatches
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
-                </button>
+                </a>
+                <a
+                  href="https://isabelladefortibus.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-2 text-sm font-semibold tracking-wide text-white transition hover:bg-white/20"
+                >
+                  See the Life Through Isabella
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
               </div>
             </article>
 

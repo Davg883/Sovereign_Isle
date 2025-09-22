@@ -199,7 +199,9 @@ const App: React.FC = () => {
             </>
           )}
           {view === 'member' && (
-            <FutureMemberPage onBack={() => setView('chat')} onEnterFolio={handleEnterFolio} />
+            <div className="h-full w-full overflow-hidden">
+              <FutureMemberPage onBack={() => setView('chat')} onEnterFolio={handleEnterFolio} />
+            </div>
           )}
           {view === 'map' && (
             <div className="h-full w-full">
