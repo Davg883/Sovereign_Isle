@@ -22,12 +22,12 @@ const pillarCards = [
 
 export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEnterFolio }) => {
   return (
-    <div className="h-full overflow-y-auto bg-gradient-to-br from-black/85 via-black/70 to-black/85 text-white animate-fade-in">
+    <div className="min-h-screen overflow-visible bg-transparent text-white animate-fade-in">
       <div className="relative">
-        <div className="absolute inset-0 bg-[url('https://i.imgur.com/B7xdeX9.png')] bg-cover bg-center opacity-20"></div>
+        
         <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-10 md:px-10 lg:py-16">
           {/* Section 1: Welcome */}
-          <section className="flex flex-col gap-10 rounded-[32px] border border-white/10 bg-black/45 p-8 shadow-[0_35px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:flex-row md:items-center md:gap-12 md:p-12">
+          <section className="flex flex-col gap-10 rounded-[32px] border border-white/10 bg-black/10 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)] backdrop-blur-sm md:flex-row md:items-center md:gap-12 md:p-12">
             <div className="mx-auto w-full max-w-xl md:w-1/2">
               <img
                 src="https://i.imgur.com/zsmMfIu.png"
@@ -44,7 +44,7 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
           </section>
 
           {/* Section 2: Pillars of Value */}
-          <section className="grid gap-6 rounded-[32px] border border-white/10 bg-black/40 p-8 backdrop-blur-2xl shadow-[0_25px_90px_rgba(0,0,0,0.4)] sm:grid-cols-2 lg:grid-cols-3">
+          <section className="grid gap-6 rounded-[32px] border border-white/10 bg-black/15 p-8 backdrop-blur-sm shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:grid-cols-2 lg:grid-cols-3">
             {pillarCards.map((card) => (
               <article
                 key={card.title}
@@ -57,7 +57,7 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
           </section>
 
           {/* Section 3: Content Destinations */}
-          <section className="grid gap-6 rounded-[32px] border border-white/10 bg-black/45 p-8 backdrop-blur-2xl shadow-[0_35px_110px_rgba(0,0,0,0.45)] lg:grid-cols-2">
+          <section className="grid gap-6 rounded-[32px] border border-white/10 bg-black/15 p-8 backdrop-blur-sm shadow-[0_20px_60px_rgba(0,0,0,0.35)] lg:grid-cols-2">
             <article className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.06] p-8 transition duration-300 hover:border-white/30 hover:bg-white/[0.1] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
               <div className="space-y-3">
                 <h3 className="font-serif-elegant text-2xl">Sovereign Dispatches</h3>
@@ -114,7 +114,7 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
           </section>
         </div>
       </div>
-      <div className="flex-shrink-0 border-t border-white/10 bg-black/70 py-5 text-center">
+      <div className="flex-shrink-0 border-t border-white/10 bg-black/30 py-5 text-center">
         <button onClick={onBack} className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
