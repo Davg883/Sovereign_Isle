@@ -84,7 +84,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className={`relative w-screen ${view === 'member' ? 'min-h-screen overflow-y-auto' : 'h-screen overflow-hidden'} bg-black`}>
+    <main className="relative w-screen min-h-screen overflow-y-auto bg-black">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((src, index) => (
@@ -134,8 +134,8 @@ const App: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`relative z-10 flex ${view === 'member' ? 'min-h-screen items-center justify-start' : 'h-full items-center justify-center'} flex-col p-4`}>
-        <div className={`flex ${view === 'member' ? 'min-h-screen' : 'h-full'} w-full max-w-6xl flex-col transition-filter duration-300`}>
+      <div className="relative z-10 flex min-h-screen items-center justify-start flex-col p-4">
+        <div className="flex min-h-screen w-full max-w-6xl flex-col transition-filter duration-300">
           {view === 'chat' && (
             <>
               <header className="py-8 text-center text-white flex-shrink-0">
