@@ -30,7 +30,7 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
           <section className="flex flex-col gap-10 rounded-[32px] border border-white/10 bg-black/10 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)] backdrop-blur-sm md:flex-row md:items-center md:gap-12 md:p-12">
             <div className="mx-auto w-full max-w-xl md:w-1/2">
               <img
-                src="https://i.imgur.com/zsmMfIu.png"
+                src="https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322642/Julians_Boat_Albion_Hotel_Sunset_1_y9cnjc.png"
                 alt="Portrait of Isabella de Fortibus in her study"
                 className="w-full rounded-[28px] object-cover shadow-[0_25px_70px_rgba(0,0,0,0.55)]"
               />
@@ -135,3 +135,4 @@ export const FutureMemberPage: React.FC<FutureMemberPageProps> = ({ onBack, onEn
     </div>
   );
 };
+

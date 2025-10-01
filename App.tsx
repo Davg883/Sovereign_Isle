@@ -5,10 +5,10 @@ import { MapComponent } from './components/Map';
 import { VisionaryFolio } from './components/VisionaryFolio';
 
 const backgroundImages = [
-  'https://i.imgur.com/66V4nde.png',
-  'https://i.imgur.com/31B89wc.png',
-  'https://i.imgur.com/B7xdeX9.png',
-  'https://i.imgur.com/4sIFdCz.png',
+  'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759323096/Isabella_Castle_shadow.057Z_ovvtdo.png',
+  'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322677/Misty_Coast_Walk_with_Dickens_Ghosts_lp2ixk.png',
+  'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322586/St_Catherines_Oratory_u2ce67.png',
+  'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322574/Firestone_Autumn_Sun_edcspp.png',
 ];
 
 type View = 'chat' | 'member' | 'map' | 'folio';
@@ -216,3 +216,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

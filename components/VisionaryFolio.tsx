@@ -14,32 +14,32 @@ interface VisionaryFolioProps {
 const folioPieces: FolioPiece[] = [
   {
     title: "The Sovereign's Vigil",
-    imageUrl: 'https://i.imgur.com/66V4nde.png',
-    downloadUrl: 'https://i.imgur.com/66V4nde.png',
+    imageUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759323096/Isabella_Castle_shadow.057Z_ovvtdo.png',
+    downloadUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759323096/Isabella_Castle_shadow.057Z_ovvtdo.png',
     aspect: 'landscape',
   },
   {
     title: 'The Ethereal Visionary',
-    imageUrl: 'https://i.imgur.com/4sIFdCz.png',
-    downloadUrl: 'https://i.imgur.com/4sIFdCz.png',
+    imageUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322760/Tennison_dark_vs2.193Z_ulaofv.png',
+    downloadUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322760/Tennison_dark_vs2.193Z_ulaofv.png',
     aspect: 'portrait',
   },
   {
     title: "Isabella's Sentinel",
-    imageUrl: 'https://i.imgur.com/31B89wc.png',
-    downloadUrl: 'https://i.imgur.com/31B89wc.png',
+    imageUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322756/festival_1970_tcfx6p.png',
+    downloadUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322756/festival_1970_tcfx6p.png',
     aspect: 'landscape',
   },
   {
     title: 'Mercy of the Tides',
-    imageUrl: 'https://i.imgur.com/B7xdeX9.png',
-    downloadUrl: 'https://i.imgur.com/B7xdeX9.png',
+    imageUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322677/Misty_Coast_Walk_with_Dickens_Ghosts_lp2ixk.png',
+    downloadUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322677/Misty_Coast_Walk_with_Dickens_Ghosts_lp2ixk.png',
     aspect: 'landscape',
   },
   {
     title: 'The Horizon Testament',
-    imageUrl: 'https://i.imgur.com/zsmMfIu.png',
-    downloadUrl: 'https://i.imgur.com/zsmMfIu.png',
+    imageUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322590/Tenneyson_Monument_qc68on.png',
+    downloadUrl: 'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322590/Tenneyson_Monument_qc68on.png',
     aspect: 'portrait',
   },
 ];
@@ -148,3 +148,4 @@ export const VisionaryFolio: React.FC<VisionaryFolioProps> = ({ onBack }) => {
     </div>
   );
 };
+
