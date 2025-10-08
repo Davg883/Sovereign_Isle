@@ -18,6 +18,11 @@ const projectRoot = process.cwd();
 
 let envLoaded = false;
 
+const sanitizeEnv = (value?: string | null) => {
+  if (typeof value !== 'string') return undefined;
+  return value.trim().replace(/^['"]+|['"]+$/g, '');
+};
+
 const loadEnvironment = () => {
   if (envLoaded) return;
   if (!process.env.VERCEL) {
@@ -29,11 +34,11 @@ const loadEnvironment = () => {
 
 const resolveIndexName = () => {
   const candidates = [
-    process.env.PINECONE_INDEX_NAME,
-    process.env.PINECONE_INDEX,
+    sanitizeEnv(process.env.PINECONE_INDEX_NAME),
+    sanitizeEnv(process.env.PINECONE_INDEX),
   ];
 
-  const name = candidates.find((value) => typeof value === 'string' && value.trim().length > 0)?.trim();
+  const name = candidates.find((value) => typeof value === 'string' && value.length > 0);
   if (!name) {
     throw new Error('Pinecone index name not configured. Set PINECONE_INDEX_NAME (or PINECONE_INDEX) in your environment.');
   }
@@ -48,31 +53,50 @@ let pineconeClient: Pinecone | null = null;
 let pineconeIndex: ReturnType<Pinecone['index']> | null = null;
 let openaiClient: OpenAI | null = null;
 
-export const ensureClients = () => {
+export const ensureOpenAI = () => {
   loadEnvironment();
 
   if (!openaiClient) {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = sanitizeEnv(process.env.OPENAI_API_KEY);
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not set.');
     }
     openaiClient = new OpenAI({ apiKey });
   }
 
+  return openaiClient;
+};
+
+export const ensurePineconeClient = () => {
+  loadEnvironment();
+
   if (!pineconeClient) {
-    const apiKey = process.env.PINECONE_API_KEY;
+    const apiKey = sanitizeEnv(process.env.PINECONE_API_KEY);
     if (!apiKey) {
       throw new Error('PINECONE_API_KEY is not set.');
     }
     pineconeClient = new Pinecone({ apiKey });
   }
 
+  return pineconeClient;
+};
+
+export const ensurePineconeIndex = () => {
+  const client = ensurePineconeClient();
+
   if (!pineconeIndex) {
     const indexName = resolveIndexName();
-    pineconeIndex = pineconeClient.index(indexName);
+    pineconeIndex = client.index(indexName);
   }
 
-  return { openai: openaiClient, index: pineconeIndex };
+  return pineconeIndex;
+};
+
+export const ensureClients = () => {
+  const openai = ensureOpenAI();
+  const index = ensurePineconeIndex();
+
+  return { openai, index };
 };
 
 export const chunkText = (

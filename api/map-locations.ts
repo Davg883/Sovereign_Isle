@@ -1,4 +1,4 @@
-import { ensureClients, ApiRequest, ApiResponse } from './_shared';
+import { ensureClients, ensurePineconeIndex, ApiRequest, ApiResponse } from './_shared';
 
 // Individual entry within a location
 export interface LocationEntry {
@@ -36,12 +36,12 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
       console.error('Missing PINECONE_API_KEY environment variable');
       return { status: 500, body: { error: 'Server configuration error: Missing Pinecone API key' } };
     }
-    if (!process.env.PINECONE_INDEX_NAME) {
+    if (!process.env.PINECONE_INDEX_NAME && !process.env.PINECONE_INDEX) {
       console.error('Missing PINECONE_INDEX_NAME environment variable');
       return { status: 500, body: { error: 'Server configuration error: Missing Pinecone index name' } };
     }
 
-    const { index } = ensureClients();
+    const index = ensurePineconeIndex();
 
     // Query Pinecone for all records with location coordinates
     const queryResponse = await index.query({
@@ -49,8 +49,8 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
       topK: 1000,
       includeMetadata: true,
       filter: {
-        location_lat: { $exists: true },
-        location_lng: { $exists: true },
+        location_lat: { $gte: -90, $lte: 90 },
+        location_lng: { $gte: -180, $lte: 180 },
       },
     });
 
