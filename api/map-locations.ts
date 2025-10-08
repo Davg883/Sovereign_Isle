@@ -26,11 +26,21 @@ export interface CompositeLocation {
 }
 
 export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiResponse> => {
-  if (req.method !== 'GET') {
-    return { status: 405, body: { error: 'Method not allowed' } };
-  }
-
   try {
+    if (req.method !== 'GET') {
+      return { status: 405, body: { error: 'Method not allowed' } };
+    }
+
+    // Check for required environment variables
+    if (!process.env.PINECONE_API_KEY) {
+      console.error('Missing PINECONE_API_KEY environment variable');
+      return { status: 500, body: { error: 'Server configuration error: Missing Pinecone API key' } };
+    }
+    if (!process.env.PINECONE_INDEX_NAME) {
+      console.error('Missing PINECONE_INDEX_NAME environment variable');
+      return { status: 500, body: { error: 'Server configuration error: Missing Pinecone index name' } };
+    }
+
     const { index } = ensureClients();
 
     // Query Pinecone for all records with location coordinates
@@ -45,26 +55,26 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
     });
 
     const matches = queryResponse.matches || [];
-    
+
     // Group by location (using Google Place ID as primary key, fallback to coordinates)
     const locationsMap = new Map<string, CompositeLocation>();
     const processedChunks = new Set<string>();
 
     for (const match of matches) {
       const metadata = match.metadata || {};
-      
+
       // Skip if coordinates are missing
       if (typeof metadata.location_lat !== 'number' || typeof metadata.location_lng !== 'number') continue;
 
       // Extract base ID (remove chunk suffix)
       const baseId = match.id.replace(/-chunk-\d+$/, '');
-      
+
       // Skip if we've already processed this base ID (avoid duplicate chunks)
       if (processedChunks.has(baseId)) continue;
       processedChunks.add(baseId);
 
       // Determine the location key (prefer Google Place ID, fallback to coordinates)
-      let locationKey = metadata.location_place_id 
+      const locationKey = metadata.location_place_id
         ? String(metadata.location_place_id)
         : `${metadata.location_lat}_${metadata.location_lng}`;
 
@@ -84,11 +94,9 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
 
       // Check if we already have a composite location for this key
       if (locationsMap.has(locationKey)) {
-        // Add this entry to the existing location
         const existingLocation = locationsMap.get(locationKey)!;
         existingLocation.entries.push(entry);
       } else {
-        // Create a new composite location
         const compositeLocation: CompositeLocation = {
           location_id: locationKey,
           location_name: metadata.location_name ? String(metadata.location_name) : null,
@@ -103,19 +111,20 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
     }
 
     // Convert map to array and sort entries within each location
-    const locations = Array.from(locationsMap.values()).map(location => {
-      // Sort entries by type priority (Event first, then Accommodation, then others)
+    const locations = Array.from(locationsMap.values()).map((location) => {
+      const typePriority: Record<string, number> = {
+        Event: 1,
+        Accommodation: 2,
+        Restaurant: 3,
+        Attraction: 4,
+      };
+
       location.entries.sort((a, b) => {
-        const typePriority: { [key: string]: number } = {
-          'Event': 1,
-          'Accommodation': 2,
-          'Restaurant': 3,
-          'Attraction': 4,
-        };
         const aPriority = typePriority[a.type || ''] || 999;
         const bPriority = typePriority[b.type || ''] || 999;
         return aPriority - bPriority;
       });
+
       return location;
     });
 
@@ -123,16 +132,21 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
       status: 200,
       body: { locations },
     };
-  } catch (error: any) {
-    console.error('Map locations fetch error:', error);
+  } catch (error) {
+    console.error('Error fetching map locations:', error);
     return {
       status: 500,
-      body: { error: 'Failed to fetch map locations from the Sovereign DataVault.' },
+      body: { error: 'Unexpected server error.' },
     };
   }
 };
 
 export default async function handler(req: any, res: any) {
-  const response = await handleMapLocationsRequest({ method: req.method ?? 'GET' });
-  res.status(response.status).json(response.body);
+  try {
+    const response = await handleMapLocationsRequest({ method: req.method ?? 'GET' });
+    res.status(response.status).json(response.body);
+  } catch (error) {
+    console.error('Unhandled error in map locations handler:', error);
+    res.status(500).json({ error: 'Unexpected server error.' });
+  }
 }
