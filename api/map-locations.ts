@@ -1,4 +1,6 @@
-import { ensureClients, ensurePineconeIndex, ApiRequest, ApiResponse } from './_shared';
+import fs from 'fs/promises';
+import path from 'path';
+import { ensurePineconeIndex, ApiRequest, ApiResponse } from './_shared';
 
 // Individual entry within a location
 export interface LocationEntry {
@@ -40,6 +42,11 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
       console.error('Missing PINECONE_INDEX_NAME environment variable');
       return { status: 500, body: { error: 'Server configuration error: Missing Pinecone index name' } };
     }
+
+    console.log('[MapLocations] Pinecone index env values', {
+      name: process.env.PINECONE_INDEX_NAME,
+      fallback: process.env.PINECONE_INDEX,
+    });
 
     const index = ensurePineconeIndex();
 
@@ -133,10 +140,45 @@ export const handleMapLocationsRequest = async (req: ApiRequest): Promise<ApiRes
       body: { locations },
     };
   } catch (error) {
-    console.error('Error fetching map locations:', error);
+    const err = error as any;
+    console.error('Error fetching map locations:', err?.message ?? err);
+    if (err?.response) {
+      console.error('Pinecone response status:', err.response?.status);
+      if (err.response?.data) {
+        try {
+          console.error('Pinecone response data:', JSON.stringify(err.response.data));
+        } catch {
+          console.error('Pinecone response data (raw):', err.response.data);
+        }
+      }
+    } else if (err?.body) {
+      console.error('Error body:', err.body);
+    } else if (err?.stack) {
+      console.error(err.stack);
+    }
+
+    try {
+      const fallbackPath = path.join(process.cwd(), 'map-locations-response.json');
+      const fallbackRaw = await fs.readFile(fallbackPath, 'utf-8');
+      const fallbackData = JSON.parse(fallbackRaw);
+      if (fallbackData?.locations) {
+        console.warn('[MapLocations] Serving fallback dataset due to Pinecone failure.');
+        return {
+          status: 200,
+          body: fallbackData,
+        };
+      }
+    } catch (fallbackError) {
+      console.error('Failed to load fallback map locations:', fallbackError);
+    }
+
     return {
       status: 500,
-      body: { error: 'Unexpected server error.' },
+      body: {
+        error: 'Unexpected server error.',
+        detail: err?.message ?? null,
+        pineconeStatus: err?.response?.status ?? null,
+      },
     };
   }
 };

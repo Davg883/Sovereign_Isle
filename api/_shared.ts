@@ -61,6 +61,7 @@ export const ensureOpenAI = () => {
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not set.');
     }
+    console.log('[OpenAI] Initializing client (key length %d)', apiKey.length);
     openaiClient = new OpenAI({ apiKey });
   }
 
@@ -75,6 +76,7 @@ export const ensurePineconeClient = () => {
     if (!apiKey) {
       throw new Error('PINECONE_API_KEY is not set.');
     }
+    console.log('[Pinecone] Initializing client (key length %d)', apiKey.length);
     pineconeClient = new Pinecone({ apiKey });
   }
 
@@ -86,6 +88,7 @@ export const ensurePineconeIndex = () => {
 
   if (!pineconeIndex) {
     const indexName = resolveIndexName();
+    console.log('[Pinecone] Using index "%s"', indexName);
     pineconeIndex = client.index(indexName);
   }
 
