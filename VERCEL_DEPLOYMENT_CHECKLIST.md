@@ -35,6 +35,7 @@ OPENAI_TEMPORAL_MODEL=gpt-4o-mini
 OPENAI_TEMPERATURE=0.7
 
 # Pinecone
+# IMPORTANT: keep these names exactly as shown (PINECONE_*). Do NOT use "PINECODE_*".
 PINECONE_API_KEY=pcsk_2R3rbo_LET2CpCurdyEx3MG7mrD6HQy46RLUGCuYwbjCcCiG9W1z4dYcwLNGFKXmz7Zghy
 PINECONE_INDEX_NAME=sovereign-isle
 PINECONE_CLOUD=aws
