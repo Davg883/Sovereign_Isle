@@ -688,231 +688,236 @@ const parseCitedPaths = (raw: string) => {
 };
 
 export const handleChatRequest = async (req: ApiRequest): Promise<ApiResponse> => {
-  if (req.method !== "POST") {
-    return { status: 405, body: { error: "Method not allowed" } };
-  }
-
-  let body = req.body;
-  if (typeof body === "string") {
-    try {
-      body = JSON.parse(body);
-    } catch (error) {
-      return { status: 400, body: { error: "Request body must be valid JSON." } };
-    }
-  }
-
-  const queryFromBody = typeof body?.query === "string" ? body.query : null;
-  const messageList = Array.isArray(body?.messages)
-    ? (body.messages as Array<Record<string, unknown>>)
-    : null;
-
-  let query: string | null = queryFromBody;
-
-  if (!query && messageList) {
-    for (let i = messageList.length - 1; i >= 0; i -= 1) {
-      const candidate = messageList[i];
-      if (!candidate) {
-        continue;
-      }
-
-      const role = typeof candidate.role === "string" ? (candidate.role as string) : null;
-      const rawContent = candidate.content;
-
-      let content: string | null = null;
-      if (typeof rawContent === "string") {
-        content = rawContent;
-      } else if (Array.isArray(rawContent)) {
-        content =
-          rawContent
-            .map((piece) => (typeof piece === "string" ? piece : ""))
-            .join(" ")
-            .trim() || null;
-      }
-
-      if (content && (!role || role === "user")) {
-        query = content;
-        break;
-      }
-    }
-  }
-
-  if (!query || typeof query !== "string" || !query.trim()) {
-    return { status: 400, body: { error: 'Missing "query" in request body.' } };
-  }
-
-  query = query.trim();
-
   try {
-    const { index, openai } = ensureClients();
-
-    const intent = await classifyIntent(openai, query);
-    const temporalClassification = await classifyTemporalWindow(openai, query, TEMPORAL_REFERENCE_DATE);
-    const geographicIntent = await extractGeographicIntent(openai, query);
-
-    const toolPlan = selectToolPlan(temporalClassification, query, intent);
-    const temporalRangeForFilter = intent === "Event" ? temporalClassification : null;
-
-    const resolveDatavault = async (googleList: GoogleSearchResult[]): Promise<RetrievedSource[]> => {
-      if (!toolPlan.runDatavault) {
-        return [];
+      if (req.method !== "POST") {
+        return { status: 405, body: { error: "Method not allowed" } };
       }
-
-      const candidateQueries = buildDatavaultCandidateQueries(query, googleList);
-
-      const applySearch = async (queries: string[], filter?: Record<string, unknown>) => {
-        for (const candidateQuery of queries) {
-          const results = await runDatavaultSearch({
-            openai,
-            index,
-            query: candidateQuery,
-            topK: TOP_K,
-            filter,
-          });
-          if (results.length > 0) {
-            return results;
+    
+      let body = req.body;
+      if (typeof body === "string") {
+        try {
+          body = JSON.parse(body);
+        } catch (error) {
+          return { status: 400, body: { error: "Request body must be valid JSON." } };
+        }
+      }
+    
+      const queryFromBody = typeof body?.query === "string" ? body.query : null;
+      const messageList = Array.isArray(body?.messages)
+        ? (body.messages as Array<Record<string, unknown>>)
+        : null;
+    
+      let query: string | null = queryFromBody;
+    
+      if (!query && messageList) {
+        for (let i = messageList.length - 1; i >= 0; i -= 1) {
+          const candidate = messageList[i];
+          if (!candidate) {
+            continue;
+          }
+    
+          const role = typeof candidate.role === "string" ? (candidate.role as string) : null;
+          const rawContent = candidate.content;
+    
+          let content: string | null = null;
+          if (typeof rawContent === "string") {
+            content = rawContent;
+          } else if (Array.isArray(rawContent)) {
+            content =
+              rawContent
+                .map((piece) => (typeof piece === "string" ? piece : ""))
+                .join(" ")
+                .trim() || null;
+          }
+    
+          if (content && (!role || role === "user")) {
+            query = content;
+            break;
           }
         }
-        return [] as RetrievedSource[];
-      };
-
-      const primaryFilter = buildFilter(intent, temporalRangeForFilter);
-
-      let sources = await applySearch(candidateQueries, primaryFilter);
-
-      if (sources.length === 0 && primaryFilter) {
-        const relaxedFilter =
-          intent === "Event"
-            ? { type: { $eq: "Event" } }
-            : intent === "Accommodation" || intent === "Restaurant"
-            ? { type: { $eq: intent } }
-            : undefined;
-
-        if (relaxedFilter) {
-          sources = await applySearch(candidateQueries, relaxedFilter);
-        }
-
-        if (sources.length === 0) {
-          sources = await applySearch(candidateQueries);
-        }
-      } else if (sources.length === 0) {
-        sources = await applySearch(candidateQueries);
       }
-
-      return sources;
-    };
-
-    let datavaultSources: RetrievedSource[] = [];
-    let googleResults: GoogleSearchResult[] = [];
-    let datavaultConfidence = 1;
-
-    if (geographicIntent.hasConstraint && geographicIntent.confidence >= 7) {
-      googleResults = await runGoogleSearch(query);
-      datavaultSources = await resolveDatavault(googleResults);
-      datavaultConfidence = await scoreDatavaultConfidence(openai, query, datavaultSources);
-      toolPlan.datavaultConfidence = datavaultConfidence;
-      toolPlan.reason = `Geographic constraint detected (${geographicIntent.location}): web reconnaissance first, then Sovereign DataVault cross-reference.`;
-    } else {
-      datavaultSources = await resolveDatavault([]);
-      datavaultConfidence = await scoreDatavaultConfidence(openai, query, datavaultSources);
-      toolPlan.datavaultConfidence = datavaultConfidence;
-      const confidenceThreshold = toolPlan.confidenceThreshold ?? 8;
-
-      const shouldQueryWeb = () =>
-        toolPlan.runGoogle && (datavaultConfidence < confidenceThreshold || datavaultSources.length === 0);
-
-      if (shouldQueryWeb()) {
-        googleResults = await runGoogleSearch(query);
-
-        if (googleResults.length > 0) {
-          const augmentedSources = await resolveDatavault(googleResults);
-          if (augmentedSources.length > 0) {
-            datavaultSources = augmentedSources;
+    
+      if (!query || typeof query !== "string" || !query.trim()) {
+        return { status: 400, body: { error: 'Missing "query" in request body.' } };
+      }
+    
+      query = query.trim();
+    
+        const { index, openai } = ensureClients();
+    
+        const intent = await classifyIntent(openai, query);
+        const temporalClassification = await classifyTemporalWindow(openai, query, TEMPORAL_REFERENCE_DATE);
+        const geographicIntent = await extractGeographicIntent(openai, query);
+    
+        const toolPlan = selectToolPlan(temporalClassification, query, intent);
+        const temporalRangeForFilter = intent === "Event" ? temporalClassification : null;
+    
+        const resolveDatavault = async (googleList: GoogleSearchResult[]): Promise<RetrievedSource[]> => {
+          if (!toolPlan.runDatavault) {
+            return [];
           }
+    
+          const candidateQueries = buildDatavaultCandidateQueries(query, googleList);
+    
+          const applySearch = async (queries: string[], filter?: Record<string, unknown>) => {
+            for (const candidateQuery of queries) {
+              const results = await runDatavaultSearch({
+                openai,
+                index,
+                query: candidateQuery,
+                topK: TOP_K,
+                filter,
+              });
+              if (results.length > 0) {
+                return results;
+              }
+            }
+            return [] as RetrievedSource[];
+          };
+    
+          const primaryFilter = buildFilter(intent, temporalRangeForFilter);
+    
+          let sources = await applySearch(candidateQueries, primaryFilter);
+    
+          if (sources.length === 0 && primaryFilter) {
+            const relaxedFilter =
+              intent === "Event"
+                ? { type: { $eq: "Event" } }
+                : intent === "Accommodation" || intent === "Restaurant"
+                ? { type: { $eq: intent } }
+                : undefined;
+    
+            if (relaxedFilter) {
+              sources = await applySearch(candidateQueries, relaxedFilter);
+            }
+    
+            if (sources.length === 0) {
+              sources = await applySearch(candidateQueries);
+            }
+          } else if (sources.length === 0) {
+            sources = await applySearch(candidateQueries);
+          }
+    
+          return sources;
+        };
+    
+        let datavaultSources: RetrievedSource[] = [];
+        let googleResults: GoogleSearchResult[] = [];
+        let datavaultConfidence = 1;
+    
+        if (geographicIntent.hasConstraint && geographicIntent.confidence >= 7) {
+          googleResults = await runGoogleSearch(query);
+          datavaultSources = await resolveDatavault(googleResults);
           datavaultConfidence = await scoreDatavaultConfidence(openai, query, datavaultSources);
           toolPlan.datavaultConfidence = datavaultConfidence;
+          toolPlan.reason = `Geographic constraint detected (${geographicIntent.location}): web reconnaissance first, then Sovereign DataVault cross-reference.`;
+        } else {
+          datavaultSources = await resolveDatavault([]);
+          datavaultConfidence = await scoreDatavaultConfidence(openai, query, datavaultSources);
+          toolPlan.datavaultConfidence = datavaultConfidence;
+          const confidenceThreshold = toolPlan.confidenceThreshold ?? 8;
+    
+          const shouldQueryWeb = () =>
+            toolPlan.runGoogle && (datavaultConfidence < confidenceThreshold || datavaultSources.length === 0);
+    
+          if (shouldQueryWeb()) {
+            googleResults = await runGoogleSearch(query);
+    
+            if (googleResults.length > 0) {
+              const augmentedSources = await resolveDatavault(googleResults);
+              if (augmentedSources.length > 0) {
+                datavaultSources = augmentedSources;
+              }
+              datavaultConfidence = await scoreDatavaultConfidence(openai, query, datavaultSources);
+              toolPlan.datavaultConfidence = datavaultConfidence;
+            }
+          }
+    
+          if (googleResults.length === 0 && toolPlan.fallbackToGoogleOnEmptyDatavault && datavaultSources.length === 0) {
+            googleResults = await runGoogleSearch(query);
+          }
         }
-      }
-
-      if (googleResults.length === 0 && toolPlan.fallbackToGoogleOnEmptyDatavault && datavaultSources.length === 0) {
-        googleResults = await runGoogleSearch(query);
-      }
-    }
-
-    const temporalNarrative = buildTemporalNarrative(temporalRangeForFilter);
-    const promptQuestion = temporalNarrative ? `${query}\n\n${temporalNarrative}` : query;
-
-    const contextBlocks = renderDataVaultContext(datavaultSources);
-    const synthesizerEnvelope = buildSynthesizerEnvelope(
-      query,
-      datavaultSources,
-      googleResults,
-      temporalClassification,
-      toolPlan,
-      geographicIntent,
-    );
-
-    const messages = buildPrompt(promptQuestion, contextBlocks, synthesizerEnvelope);
-
-    const chatCompletion = await openai.chat.completions.create({
-      model: getChatModel(),
-      messages,
-      temperature: Number(process.env.OPENAI_TEMPERATURE ?? 0.7),
-    });
-
-    const rawContent =
-      chatCompletion.choices?.[0]?.message?.content ??
-      "I am still gathering the right passages. May I hear a little more about what you need?";
-
-    const { answer, paths: citedPaths } = parseCitedPaths(rawContent);
-
-    let citedSources = datavaultSources.filter((source) => citedPaths.includes(source.sourcePath));
-    if (citedSources.length === 0 && datavaultSources.length > 0) {
-      citedSources = [datavaultSources[0]];
-    }
-
-    // De-duplicate citations by source path (keep only first occurrence of each unique source)
-    const seenSources = new Set<string>();
-    const uniqueCitedSources = citedSources.filter((source) => {
-      if (seenSources.has(source.sourcePath)) {
-        return false;
-      }
-      seenSources.add(source.sourcePath);
-      return true;
-    });
-
-    const responseSources = uniqueCitedSources.map((source) => ({
-      id: source.id,
-      title: source.title,
-      summary: source.summary,
-      source: source.sourcePath,
-      url: source.url,
-      score: source.score,
-      startDate: source.startDate ?? null,
-      endDate: source.endDate ?? null,
-      startTime: source.startTime ?? null,
-      endTime: source.endTime ?? null,
-    }));
-
-    return {
-      status: 200,
-      body: {
-        answer,
-        sources: responseSources,
-        toolPlan,
-        googleResults,
-        temporalClassification,
-      },
-    };
-  } catch (error: any) {
-    console.error("Error handling chat request:", error);
+    
+        const temporalNarrative = buildTemporalNarrative(temporalRangeForFilter);
+        const promptQuestion = temporalNarrative ? `${query}\n\n${temporalNarrative}` : query;
+    
+        const contextBlocks = renderDataVaultContext(datavaultSources);
+        const synthesizerEnvelope = buildSynthesizerEnvelope(
+          query,
+          datavaultSources,
+          googleResults,
+          temporalClassification,
+          toolPlan,
+          geographicIntent,
+        );
+    
+        const messages = buildPrompt(promptQuestion, contextBlocks, synthesizerEnvelope);
+    
+        const chatCompletion = await openai.chat.completions.create({
+          model: getChatModel(),
+          messages,
+          temperature: Number(process.env.OPENAI_TEMPERATURE ?? 0.7),
+        });
+    
+        const rawContent =
+          chatCompletion.choices?.[0]?.message?.content ??
+          "I am still gathering the right passages. May I hear a little more about what you need?";
+    
+        const { answer, paths: citedPaths } = parseCitedPaths(rawContent);
+    
+        let citedSources = datavaultSources.filter((source) => citedPaths.includes(source.sourcePath));
+        if (citedSources.length === 0 && datavaultSources.length > 0) {
+          citedSources = [datavaultSources[0]];
+        }
+    
+        // De-duplicate citations by source path (keep only first occurrence of each unique source)
+        const seenSources = new Set<string>();
+        const uniqueCitedSources = citedSources.filter((source) => {
+          if (seenSources.has(source.sourcePath)) {
+            return false;
+          }
+          seenSources.add(source.sourcePath);
+          return true;
+        });
+    
+        const responseSources = uniqueCitedSources.map((source) => ({
+          id: source.id,
+          title: source.title,
+          summary: source.summary,
+          source: source.sourcePath,
+          url: source.url,
+          score: source.score,
+          startDate: source.startDate ?? null,
+          endDate: source.endDate ?? null,
+          startTime: source.startTime ?? null,
+          endTime: source.endTime ?? null,
+        }));
+    
+        return {
+          status: 200,
+          body: {
+            answer,
+            sources: responseSources,
+            toolPlan,
+            googleResults,
+            temporalClassification,
+          },
+        };
+  } catch (error) {
+    console.error('Error handling chat request:', error);
     return {
       status: 500,
-      body: { error: "Isabella is momentarily unable to reach the Sovereign DataVault. Please try again shortly." },
+      body: { error: 'Unexpected server error.' },
     };
   }
 };
 
 export default async function handler(req: any, res: any) {
-  const response = await handleChatRequest({ method: req.method ?? "GET", body: req.body });
-  res.status(response.status).json(response.body);
+  try {
+    const response = await handleChatRequest({ method: req.method ?? 'POST', body: req.body });
+    res.status(response.status).json(response.body);
+  } catch (error) {
+    console.error('Unhandled error in chat handler:', error);
+    res.status(500).json({ error: 'Unexpected server error.' });
+  }
 }
