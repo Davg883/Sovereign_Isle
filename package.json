@@ -1,25 +1,33 @@
 {
-  "name": "visitwight.ai---your-sovereign-experience",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@google/genai": "^1.19.0",
-    "@tailwindcss/vite": "^4.1.13",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.13"
-  },
-  "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@types/react": "^18.3.24",
-    "@types/react-dom": "^18.3.7",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  }
+    "name": "visitwight.ai---your-sovereign-experience",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "embed": "node ./scripts/embed.mjs",
+        "init:index": "node ./scripts/create-index.mjs",
+        "cleanup:events": "node ./scripts/prune-expired-events.mjs"
+    },
+    "dependencies": {
+        "@google/genai": "^1.19.0",
+        "@pinecone-database/pinecone": "^2.2.2",
+        "@tailwindcss/vite": "^4.1.13",
+        "@vis.gl/react-google-maps": "^1.5.5",
+        "dotenv": "^16.4.5",
+        "gray-matter": "^4.0.3",
+        "openai": "^4.67.1",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "tailwindcss": "^4.1.13"
+    },
+    "devDependencies": {
+        "@types/node": "^22.14.0",
+        "@types/react": "^18.3.24",
+        "@types/react-dom": "^18.3.7",
+        "typescript": "~5.8.2",
+        "vite": "^6.2.0"
+    }
 }

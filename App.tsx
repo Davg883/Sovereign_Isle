@@ -3,6 +3,8 @@ import { Chat } from './components/Chat';
 import { FutureMemberPage } from './components/FutureMemberPage';
 import { MapComponent } from './components/Map';
 import { VisionaryFolio } from './components/VisionaryFolio';
+import { AdminPanel } from './components/AdminPanel';
+import { ThemeProvider } from './ThemeContext';
 
 const backgroundImages = [
   'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759323096/Isabella_Castle_shadow.057Z_ovvtdo.png',
@@ -11,9 +13,11 @@ const backgroundImages = [
   'https://res.cloudinary.com/dptqxjhb8/image/upload/v1759322574/Firestone_Autumn_Sun_edcspp.png',
 ];
 
-type View = 'chat' | 'member' | 'map' | 'folio';
+type View = 'chat' | 'member' | 'map' | 'folio' | 'admin';
 
-const validViews: ReadonlyArray<View> = ['chat', 'member', 'map', 'folio'];
+const validViews: ReadonlyArray<View> = ['chat', 'member', 'map', 'folio', 'admin'];
+
+const isAdminEnabled = (import.meta as any).env?.VITE_ENABLE_ADMIN === 'true';
 
 const getInitialView = (): View => {
   if (typeof window === 'undefined') {
@@ -24,6 +28,9 @@ const getInitialView = (): View => {
   const viewParam = params.get('view');
 
   if (viewParam && validViews.includes(viewParam as View)) {
+    if (viewParam === 'admin' && !isAdminEnabled) {
+      return 'chat';
+    }
     return viewParam as View;
   }
 
@@ -59,7 +66,11 @@ const App: React.FC = () => {
     if (view === 'chat') {
       params.delete('view');
     } else {
-      params.set('view', view);
+      if (view === 'admin' && !isAdminEnabled) {
+        params.delete('view');
+      } else {
+        params.set('view', view);
+      }
     }
 
     const search = params.toString();
@@ -83,8 +94,29 @@ const App: React.FC = () => {
     setView('folio');
   };
 
+  const renderAdminButton = view === 'admin'
+    ? (
+        <button
+          onClick={() => setView('chat')}
+          className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
+          aria-label="Return to Chat"
+        >
+          Return to Chat
+        </button>
+      )
+    : (
+        <button
+          onClick={() => setView('admin')}
+          className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
+          aria-label="Open Isabella Admin"
+        >
+          Isabella Admin
+        </button>
+      );
+
   return (
-    <main className="relative w-screen min-h-screen overflow-y-auto bg-black">
+    <ThemeProvider>
+      <main className="relative w-screen min-h-screen overflow-y-auto bg-black">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((src, index) => (
@@ -104,7 +136,7 @@ const App: React.FC = () => {
 
       {/* Header Buttons */}
       <div className="absolute top-4 right-4 z-20 flex gap-2">
-        {view !== 'chat' && (
+        {view !== 'chat' && view !== 'admin' && (
           <button
             onClick={() => setView('chat')}
             className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white font-medium hover:bg-white/20 transition-colors duration-200 backdrop-blur-sm text-sm"
@@ -131,6 +163,7 @@ const App: React.FC = () => {
             </button>
           </>
         )}
+        {isAdminEnabled && renderAdminButton}
       </div>
 
       {/* Main Content */}
@@ -164,7 +197,7 @@ const App: React.FC = () => {
                     >
                       <p className="font-serif-elegant text-lg text-white">The Legend of Isabella</p>
                       <p className="mt-2">
-                        Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century—a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
+                        Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century - a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
                       </p>
                     </div>
                   )}
@@ -188,7 +221,7 @@ const App: React.FC = () => {
                   >
                     <p className="font-serif-elegant text-lg text-white">The Legend of Isabella</p>
                     <p className="mt-2">
-                      Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century—a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
+                      Isabella de Fortibus was the last feudal Queen of the Isle of Wight in the 13th century - a ruler renowned for her wisdom and vision. Today her sovereign spirit animates this guide, an AI trained on centuries of stories, secrets, and local lore to help you begin your own unforgettable chapter.
                     </p>
                   </div>
                 )}
@@ -204,16 +237,21 @@ const App: React.FC = () => {
             </div>
           )}
           {view === 'map' && (
-            <div className="h-full w-full">
+            <div className="w-full h-[calc(100vh-2rem)] min-h-[600px]">
               <MapComponent onMapSelect={handleMapSelect} itinerary={mapItinerary} />
             </div>
           )}
           {view === 'folio' && <VisionaryFolio onBack={() => setView('member')} />}
+          {view === 'admin' && isAdminEnabled && (
+            <div className="flex-grow py-12">
+              <AdminPanel />
+            </div>
+          )}
         </div>
       </div>
-    </main>
+      </main>
+    </ThemeProvider>
   );
 };
 
 export default App;
-

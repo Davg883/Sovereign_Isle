@@ -1,14 +1,14 @@
-import React from 'react';
-import styles from './SuggestionPanels.module.css';
+import React from "react";
+import styles from "./SuggestionPanels.module.css";
 
 interface SuggestionPanelsProps {
   onSuggestionClick: (suggestion: string) => void;
 }
 
 const suggestions = [
-  "What's on today?",
-  "Where can I find live music?",
-  "Suggest a romantic day for a couple",
+  "Unveil today's sovereign happenings.",
+  "Find a cozy pub with a real fire.",
+  "Craft a perfect windswept walk.",
 ];
 
 const SuggestionButton: React.FC<{ text: string; onClick: () => void }> = ({ text, onClick }) => (

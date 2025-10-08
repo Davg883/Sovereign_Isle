@@ -3,6 +3,15 @@ export interface Place {
   title: string;
 }
 
+export interface DataVaultSource {
+  id: string;
+  title: string;
+  url: string | null;
+  summary: string | null;
+  source: string | null;
+  score: number | null;
+}
+
 export enum Sender {
   User = 'user',
   AI = 'ai',
@@ -16,7 +25,7 @@ export interface SpecialContent {
   alt?: string;
   title?: string;
   // For map_link type, we can include itinerary data
-  itinerary?: Array<{name: string, lat: number, lng: number, placeId: string}>;
+  itinerary?: Array<{ name: string, lat: number, lng: number, placeId: string }>;
 }
 
 export interface Message {
@@ -25,4 +34,5 @@ export interface Message {
   text: string;
   specialContent?: SpecialContent;
   places?: Place[];
+  sources?: DataVaultSource[];
 }
