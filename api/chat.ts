@@ -1,4 +1,4 @@
-import { SYSTEM_INSTRUCTION } from "../constants";
+import { SYSTEM_INSTRUCTION } from "../constants.js";
 import {
   ensureClients,
   getEmbeddingModel,
@@ -6,7 +6,7 @@ import {
   ApiRequest,
   ApiResponse,
   dateStringToIndexNumber,
-} from "./_shared";
+} from "./_shared.js";
 
 type ClassifiedIntent = "Accommodation" | "Restaurant" | "Event" | "General";
 type TemporalIntent = "PAST" | "PRESENT" | "IMMEDIATE_FUTURE" | "BROADER_FUTURE";

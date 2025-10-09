@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ensurePineconeIndex, ApiRequest, ApiResponse } from './_shared';
+import { ensurePineconeIndex, ApiRequest, ApiResponse } from './_shared.js';
 
 // Individual entry within a location
 export interface LocationEntry {
