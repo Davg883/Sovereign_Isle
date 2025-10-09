@@ -1,4 +1,4 @@
-import { ensureClients, ApiRequest, ApiResponse } from '../_shared.js';
+import { ensureClients, ApiRequest, ApiResponse } from '../_shared';
 
 interface PrefillPayload {
   url?: string;

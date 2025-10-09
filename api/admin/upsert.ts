@@ -1,5 +1,5 @@
-import { ensureClients, getEmbeddingModel, ApiRequest, ApiResponse } from '../_shared.js';
-import { parseTags, sanitizeId, chunkText } from '../_shared.js';
+import { ensureClients, getEmbeddingModel, ApiRequest, ApiResponse } from '../_shared';
+import { parseTags, sanitizeId, chunkText } from '../_shared';
 
 interface StructuredLocation {
   name: string;
