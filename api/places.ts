@@ -1,4 +1,4 @@
-import { ApiRequest, ApiResponse } from './_shared';
+import { ApiRequest, ApiResponse } from './_shared.js';
 
 interface PlacesRequest {
   placeId?: string;
