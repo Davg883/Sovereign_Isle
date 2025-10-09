@@ -1,4 +1,4 @@
-import { Message, Sender, SpecialContent } from './types';
+import { Message, Sender, SpecialContent } from './types.js';
 
 export const uniqueId = (): string => `id-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
